@@ -9,7 +9,7 @@ dotenv.config();
 
 // Register
 router.post("/register", async (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     let user = await User.findOne({ username });
@@ -50,6 +50,52 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
+  }
+});
+
+// Login
+router.post("/login", async (req, res) => {
+  const { username, email, password } = req.body;
+
+  try {
+    // Cari user berdasarkan username atau email
+    let user = await User.findOne({
+      $or: [{ username: username }, { email: email }],
+    });
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid Credentials",
+      });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid Credentials",
+      });
+    }
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      {
+        expiresIn: 3600,
+      },
+      (err, token) => {
+        if (err) throw err;
+        res.status(200).json({
+          token,
+          message: "Login sucessful",
+        });
+      }
+    );
+  } catch (error) {
+    console.error(err.message);
+    res.status(500).send("Server error");
   }
 });
 
