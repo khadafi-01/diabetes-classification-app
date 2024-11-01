@@ -7,9 +7,9 @@ const router = express.Router();
 
 dotenv.config();
 
-//Register
+// Register
 router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
   try {
     let user = await User.findOne({ username });
@@ -17,8 +17,14 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
     user = new User({
       username,
+      email,
       password,
     });
     await user.save();
@@ -37,12 +43,14 @@ router.post("/register", async (req, res) => {
         if (err) throw err;
         res.status(200).json({
           token,
-          message: "Registration successfull",
+          message: "Registration successful",
         });
       }
     );
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
     res.status(500).send("Server Error");
   }
 });
+
+module.exports = router;
