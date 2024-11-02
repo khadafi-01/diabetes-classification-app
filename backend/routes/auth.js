@@ -182,4 +182,22 @@ router.put("/:id/username", async (req, res) => {
   }
 });
 
+// Update Email
+router.put("/user/:id/email", auth, async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.email = email;
+    await user.save();
+
+    res.status(200).json({ message: "Email updated successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 module.exports = router;
