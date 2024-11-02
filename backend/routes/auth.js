@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 
 dotenv.config();
-
+// Middleware to verify JWT Tokens
 const auth = (req, res, next) => {
   const token = req.header("Authorization").replace("Bearer ", "");
   if (!token) {
