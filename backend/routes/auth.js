@@ -38,12 +38,10 @@ router.post("/register", async (req, res) => {
   // Validasi panjang password dan kompleksitas
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   if (!passwordRegex.test(password)) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Password must be at least 8 characters long and include both uppercase and lowercase letters",
-      });
+    return res.status(400).json({
+      message:
+        "Password must be at least 8 characters long and include both uppercase and lowercase letters",
+    });
   }
 
   try {
@@ -93,8 +91,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-module.exports = router;
-
 // Login
 router.post("/login", async (req, res) => {
   const { username, email, password } = req.body;
@@ -105,16 +101,22 @@ router.post("/login", async (req, res) => {
       $or: [{ username: username }, { email: email }],
     });
     if (!user) {
+      console.log("User not found");
       return res.status(400).json({
         message: "Invalid Credentials",
       });
     }
+    console.log("User found:", user);
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log("Password does not match");
       return res.status(400).json({
         message: "Invalid Credentials",
       });
     }
+
+    console.log("Password matches");
     const payload = {
       user: {
         id: user.id,
@@ -131,12 +133,12 @@ router.post("/login", async (req, res) => {
         if (err) throw err;
         res.status(200).json({
           token,
-          message: "Login sucessful",
+          message: "Login successful",
         });
       }
     );
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
     res.status(500).send("Server error");
   }
 });
