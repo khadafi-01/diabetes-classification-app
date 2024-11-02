@@ -7,10 +7,12 @@ const db = process.env.MONGO_URI;
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(db);
-    console.log("MongoDB connected ...");
+    await mongoose.connect(db, {
+      connectTimeoutMS: 30000,
+    });
+    console.log("MongoDB connected");
   } catch (err) {
-    console.error(err.message);
+    console.error("Error connecting to MongoDB: ", err.message);
     process.exit(1);
   }
 };

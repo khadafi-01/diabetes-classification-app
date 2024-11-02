@@ -93,20 +93,20 @@ router.post("/login", async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    let user = await User.findOne({
-      $or: [{ username: username }, { email: email }],
-    });
+    let user;
+    if (username) {
+      user = await User.findOne({ username });
+    } else if (email) {
+      user = await User.findOne({ email });
+    }
+
     if (!user) {
-      return res.status(400).json({
-        message: "Invalid Credentials",
-      });
+      return res.status(400).json({ message: "Invalid Credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({
-        message: "Invalid Credentials",
-      });
+      return res.status(400).json({ message: "Invalid Credentials" });
     }
 
     const payload = {
@@ -118,15 +118,10 @@ router.post("/login", async (req, res) => {
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      {
-        expiresIn: 3600,
-      },
+      { expiresIn: 3600 },
       (err, token) => {
         if (err) throw err;
-        res.status(200).json({
-          token,
-          message: "Login successful",
-        });
+        res.status(200).json({ token, message: "Login successful" });
       }
     );
   } catch (error) {
