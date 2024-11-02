@@ -127,7 +127,7 @@ router.post("/logout", (req, res) => {
 });
 
 // Get User Information
-router.get("/user/:id", auth, async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -139,7 +139,7 @@ router.get("/user/:id", auth, async (req, res) => {
 });
 
 // Update Password with Confirmation
-router.put("/user/:id/password", auth, async (req, res) => {
+router.put("/:id/password", auth, async (req, res) => {
   const { password, confirmPassword } = req.body;
 
   // Pastikan password dan confirmPassword sesuai
@@ -159,6 +159,26 @@ router.put("/user/:id/password", auth, async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
+  }
+});
+
+//Update Username
+router.put("/:id/username", async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user)
+      return res.status(404).json({
+        message: "User not found",
+      });
+
+    user.username = username;
+    await user.save();
+
+    res.status(200).json({ message: "Username updated successfully" });
+  } catch (error) {
+    res.status(500).send("Server error");
   }
 });
 
