@@ -28,7 +28,23 @@ const auth = (req, res, next) => {
 
 // Register
 router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
+
+  // Validasi konfirmasi password
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
+
+  // Validasi panjang password dan kompleksitas
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return res
+      .status(400)
+      .json({
+        message:
+          "Password must be at least 8 characters long and include both uppercase and lowercase letters",
+      });
+  }
 
   try {
     let user = await User.findOne({ username });
@@ -46,6 +62,11 @@ router.post("/register", async (req, res) => {
       email,
       password,
     });
+
+    // Hash password sebelum menyimpan user
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
     await user.save();
 
     const payload = {
@@ -71,6 +92,8 @@ router.post("/register", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+module.exports = router;
 
 // Login
 router.post("/login", async (req, res) => {
