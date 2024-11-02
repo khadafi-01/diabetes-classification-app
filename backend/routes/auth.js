@@ -138,4 +138,28 @@ router.get("/user/:id", auth, async (req, res) => {
   }
 });
 
+// Update Password with Confirmation
+router.put("/user/:id/password", auth, async (req, res) => {
+  const { password, confirmPassword } = req.body;
+
+  // Pastikan password dan confirmPassword sesuai
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
+
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 module.exports = router;
