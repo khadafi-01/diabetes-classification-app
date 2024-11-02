@@ -30,12 +30,10 @@ const auth = (req, res, next) => {
 router.post("/register", async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
 
-  // Validasi konfirmasi password
   if (password !== confirmPassword) {
     return res.status(400).json({ message: "Passwords do not match" });
   }
 
-  // Validasi panjang password dan kompleksitas
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
   if (!passwordRegex.test(password)) {
     return res.status(400).json({
@@ -61,7 +59,6 @@ router.post("/register", async (req, res) => {
       password,
     });
 
-    // Hash password sebelum menyimpan user
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
 
@@ -96,27 +93,22 @@ router.post("/login", async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    // Cari user berdasarkan username atau email
     let user = await User.findOne({
       $or: [{ username: username }, { email: email }],
     });
     if (!user) {
-      console.log("User not found");
       return res.status(400).json({
         message: "Invalid Credentials",
       });
     }
-    console.log("User found:", user);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("Password does not match");
       return res.status(400).json({
         message: "Invalid Credentials",
       });
     }
 
-    console.log("Password matches");
     const payload = {
       user: {
         id: user.id,
