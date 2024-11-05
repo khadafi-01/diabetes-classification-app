@@ -2,13 +2,28 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Box, TextField, Button, Typography, Grid, Paper } from '@mui/material';
 import { styled } from '@mui/system'
-
+import '../index.css';
 const StyledBox = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: '20px',
     marginTop: '50px',
+});
+
+const StyledPaper = styled(Paper)({
+    padding: '40px',
+    borderRadius: '15px',
+    background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+});
+
+const StyledButton = styled(Button)({
+    backgroundColor: '#673ab7',
+    color: 'fff',
+    '&:hover': {
+        backgroundColor: '#5e35b1',
+    },
+    boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.2)',
 });
 
 const Register: React.FC = () => {
@@ -42,8 +57,8 @@ const Register: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="sm">
-            <Paper elevation={3}>
+        <Container maxWidth="sm" className="min-h-screen flex items-center justify-center bg-gray-100">
+            <StyledPaper elevation={3}>
                 <StyledBox>
                     <Typography variant='h4' component="h1" gutterBottom>
                         Register
@@ -56,16 +71,29 @@ const Register: React.FC = () => {
                                     label="Username"
                                     value={formData.username}
                                     onChange={handleChange}
+                                    fullWidth
                                     required
+                                    className="mt-1 block w-full px-3 py-2
+                                     border border-gray-300 rounded-md shadow-sm
+                                      focus:outline-none focus:ring-indigo-500
+                                       focus:border-indigo-500
+                                        sm:text-sm"
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField fullWidth label="Email"
+                                <TextField
                                     name="email"
+                                    label="Email"
                                     type='email'
                                     value={formData.email}
                                     onChange={handleChange}
-                                    required />
+                                    fullWidth
+                                    required
+                                    className="mt-1 block w-full px-3 py-2 border
+                                     border-gray-300 rounded-md shadow-sm
+                                      focus:outline-none focus:ring-indigo-500
+                                       focus:border-indigo-500 sm:text-sm"
+                                />
                                 <Grid item xs={12}>
                                     <TextField
                                         fullWidth
@@ -74,7 +102,14 @@ const Register: React.FC = () => {
                                         type="password"
                                         value={formData.password}
                                         onChange={handleChange}
-                                        required />
+                                        required
+                                        className="block w-full mt-1 px-3 py-2
+                                         border border-gray-400 rounded-md
+                                          shadow-sm focus:outline-none
+                                           focus:ring-indigo-500
+                                            focus:border-indigo-500
+                                             sm:text-sm"
+                                    />
 
                                 </Grid>
                                 <Grid item xs={12}>
@@ -85,19 +120,25 @@ const Register: React.FC = () => {
                                         type="password"
                                         value={formData.confirmPassword}
                                         onChange={handleChange}
-                                        required />
+                                        required
+                                        className="mt-1 block w-full px-3 py-2
+                                         border border-gray-300 rounded-md shadow-sm
+                                          focus:outline-none focus:ring-indigo-500
+                                           focus:border-indigo-500
+                                            sm:text-sm"
+                                    />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <Button type="submit" variant='contained' color="primary" fullWidth>
+                                    <StyledButton type="submit" variant='contained' color="primary" fullWidth>
                                         Register
-                                    </Button>
+                                    </StyledButton>
                                 </Grid>
                             </Grid>
                         </Grid>
                     </form>
-                    {message && <Typography variant='body1' color='error' mt={2}>{message}</Typography>}
+                    {message && (<Typography variant='body1' color='error' mt={2}> {message} </Typography>)}
                 </StyledBox>
-            </Paper>
+            </StyledPaper>
         </Container>
     );
 };
